@@ -48,9 +48,13 @@ description: "Task list template for feature implementation"
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create project structure per implementation plan
-- [ ] T002 Initialize [language] project with [framework] dependencies
-- [ ] T003 [P] Configure linting and formatting tools
+- [ ] T001 Create project structure per implementation plan ensuring clean architecture
+- [ ] T002 Initialize Python 3.13+ project with UV package manager (no manual code writing - use Claude Code)
+- [ ] T003 [P] Configure linting and formatting tools to ensure code quality
+- [ ] T004 Set up in-memory data storage structure (no file/database persistence)
+- [ ] T005 Create /src directory structure for modular code organization
+- [ ] T006 Configure development environment with specified technology stack (UV, Python 3.13+, Claude Code, Spec-Kit Plus)
+- [ ] T007 Establish Product Architect development approach with specification-driven implementation
 
 ---
 

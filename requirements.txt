@@ -1,0 +1,2 @@
+# Python 3.13+ requirements for Todo Application CLI
+# No external dependencies required for basic CLI functionality
