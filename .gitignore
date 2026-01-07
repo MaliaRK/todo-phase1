@@ -1,25 +1,95 @@
 # Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
+*.so
 .Python
-env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 venv/
+env/
 .venv/
+ENV/
+.ENV
+.python-version
 pip-log.txt
 pip-delete-this-directory.txt
-.tox/
+.pytest_cache/
 .coverage
 .coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
+.htmlcov/
+.nox/
+.pyre/
+.pytype/
+mypy_cache/
+.dmypy.json
+.dSYM/
+
+# Virtual Environment
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# FastAPI/SQLModel specific
+*.db
+*.db-journal
+instance/
+.webassets-cache
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+node_modules/
+jspm_packages/
+typings/
+.cache/
+.Nyc_output
+.nyc_output/
+coverage/
+.nyc_output/
+*.lcov
+*.info
+.nyc_output/
 *.log
-.git/info/lfs
-.pytest_cache/
-.hypothesis/
+**/*.log
+.env*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Next.js
+.next
+out/
+.export
+.vercel/
+
+# Docker
+.dockerignore
+.docker
+Dockerfile*
 
 # IDE
 .vscode/
@@ -30,18 +100,20 @@ coverage.xml
 
 # OS
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+Thumbs.db:encryptable
+*:*
+*:$RECYCLE.BIN/
+ehthumbs.db
+Icon?
+Network Trash Folder
+Temporary Items
+.Trash-*
 
-# Project specific
-*.env
-.env.local
-.env.dev
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.pytest_cache/
-.coverage
-htmlcov/
-.coverage.*
-.hypothesis/
+
+nul

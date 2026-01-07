@@ -34,12 +34,12 @@
 - Code generation must be performed by Claude Code (no manual code writing)
 - Implementation must follow written specifications from spec.md
 - Developer acts as Product Architect (intentional design)
-- Technology stack: UV, Python 3.13+, Claude Code, Spec-Kit Plus
+- Technology stack must match current phase requirements (no future-phase tech)
 - Clean architecture and separation of concerns must be maintained
-- All source code must reside in /src directory with modular logic
-- Memory-only storage (no file/database persistence) as per constraints
-- Console-based interaction only (no GUI/web interface)
+- All source code must reside in appropriate directory structure with modular logic
+- Implementation must respect current phase's architectural constraints
 - No global mutable state leakage allowed
+- Follow phase-specific quality and documentation standards
 
 ## Project Structure
 
