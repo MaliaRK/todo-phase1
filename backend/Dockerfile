@@ -11,3 +11,4 @@ EXPOSE 8080
 
 # CMD simply run Python main.py
 CMD ["python", "-m", "src.main"]
+
