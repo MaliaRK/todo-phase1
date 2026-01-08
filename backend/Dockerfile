@@ -9,6 +9,6 @@ COPY . .
 
 EXPOSE 8080
 
-# CMD simply run Python main.py
-CMD ["python", "-m", "src.main"]
+# Run main.py directly
+CMD ["python", "src/main.py"]
 
