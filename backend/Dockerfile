@@ -9,6 +9,7 @@ COPY . .
 
 EXPOSE 8080
 
-# Run main.py directly
-CMD ["python", "src/main.py"]
+# Run uvicorn directly on fixed port 8080
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8080"]
+
 
