@@ -59,6 +59,11 @@ app.include_router(auth_router)
 def read_root():
     return {"message": "Todo API is running!"}
 
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))  # Read PORT env variable
     uvicorn.run(app, host="0.0.0.0", port=port, reload=False)
