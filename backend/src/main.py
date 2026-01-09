@@ -62,3 +62,9 @@ def read_root():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))  # Read PORT env variable
     uvicorn.run(app, host="0.0.0.0", port=port, reload=False)
+
+
+def run_server():
+    """Function to run the server, used by Railway deployment"""
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
