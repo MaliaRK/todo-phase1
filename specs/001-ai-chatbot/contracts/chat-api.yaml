@@ -1,0 +1,175 @@
+openapi: 3.0.0
+info:
+  title: AI Todo Chatbot API
+  description: API for the AI-powered todo chatbot that manages todos through natural language
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000
+    description: Development server
+  - url: https://api.example.com
+    description: Production server
+
+paths:
+  /api/{user_id}/chat:
+    post:
+      summary: Process a user message in a conversation
+      description: Handles natural language input from a user and processes it using an AI agent to manage their todos
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: The ID of the user making the request (must match JWT)
+          schema:
+            type: integer
+            example: 123
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: Successful response from the AI assistant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+        '400':
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - invalid or missing JWT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - user_id in JWT doesn't match path parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not found - conversation not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ChatRequest:
+      type: object
+      required:
+        - message
+      properties:
+        conversation_id:
+          type: integer
+          description: Existing conversation ID (new conversation created if absent)
+          example: 456
+        message:
+          type: string
+          description: User's natural language input
+          example: "Add a task to buy groceries"
+          minLength: 1
+          maxLength: 2000
+
+    ChatResponse:
+      type: object
+      required:
+        - conversation_id
+        - response
+      properties:
+        conversation_id:
+          type: integer
+          description: Active conversation ID (newly created or existing)
+          example: 456
+        response:
+          type: string
+          description: AI assistant's response to the user
+          example: "I've added the task 'buy groceries' to your list."
+        tool_calls:
+          type: array
+          description: List of MCP tools that were invoked
+          items:
+            $ref: '#/components/schemas/ToolCall'
+        task_summary:
+          $ref: '#/components/schemas/TaskSummary'
+
+    ToolCall:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the tool call
+          example: "call_abc123"
+        type:
+          type: string
+          description: Type of tool call
+          enum: [function]
+          example: "function"
+        function:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Name of the MCP tool called
+              enum: [add_task, list_tasks, complete_task, delete_task, update_task]
+              example: "add_task"
+            arguments:
+              type: string
+              description: Arguments passed to the tool (as JSON string)
+              example: '{"user_id": 123, "title": "buy groceries"}'
+
+    TaskSummary:
+      type: object
+      description: Summary of the user's tasks after processing
+      properties:
+        total_count:
+          type: integer
+          description: Total number of tasks
+          example: 5
+        pending_count:
+          type: integer
+          description: Number of pending tasks
+          example: 3
+        completed_count:
+          type: integer
+          description: Number of completed tasks
+          example: 2
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error code
+          example: "AUTHENTICATION_FAILED"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "Invalid JWT token provided"
+
+security:
+  - bearerAuth: []

@@ -1,7 +1,8 @@
 {
-  "name": "fullstack-todo-frontend",
-  "version": "0.1.0",
-  "private": true,
+  "name": "ai-todo-chatbot-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for the AI-powered todo chatbot using OpenAI ChatKit",
+  "main": "index.js",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

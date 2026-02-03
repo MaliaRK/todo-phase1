@@ -39,7 +39,7 @@ five architectural phases:
 
 1. Phase I – In-Memory Python Console Application
 2. Phase II – Full-Stack Web Application
-3. Phase III – AI-Powered Conversational Todo Agent
+3. Phase III – AI-Powered Conversational Todo Chatbot
 4. Phase IV – Local Kubernetes Deployment
 5. Phase V – Cloud-Native, Event-Driven AI System
 

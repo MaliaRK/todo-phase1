@@ -1,169 +1,102 @@
-# Full-Stack Todo Web Application
+# AI-Powered Todo Chatbot
 
-This is a full-stack todo application built with Next.js for the frontend and FastAPI for the backend, using SQLModel for data modeling and PostgreSQL for persistence. The application includes user authentication and authorization with JWT tokens.
+An AI-powered todo management system that allows users to manage their tasks using natural language.
 
 ## Features
 
-- Create, read, update, and delete todo tasks
-- Mark tasks as complete/incomplete
-- View all tasks in a list
-- User authentication (register/login)
-- Secure task access (users can only access their own tasks)
-- Responsive web interface
+- Natural language todo management (add, list, update, complete, delete tasks)
+- Conversational AI interface using OpenAI Agents and Cohere
+- MCP (Model Context Protocol) tools for safe database operations
+- Stateless architecture with persistent conversation history
+- JWT-based authentication with Better Auth
+- PostgreSQL database with SQLModel ORM
 
 ## Tech Stack
 
-- **Frontend**: Next.js, React, JavaScript/CSS
-- **Backend**: FastAPI, Python
-- **Database**: PostgreSQL (with SQLModel ORM)
-- **Authentication**: JWT tokens with HS256 algorithm
-- **Deployment**: Docker, docker-compose
+- **Frontend**: OpenAI ChatKit
+- **Backend**: Python FastAPI
+- **AI Framework**: OpenAI Agents SDK
+- **MCP Server**: Official MCP SDK
+- **ORM**: SQLModel
+- **Database**: Neon Serverless PostgreSQL
+- **Authentication**: Better Auth (JWT-based)
+- **LLM Provider**: Cohere API (via OpenAI-compatible interface)
 
-## Prerequisites
+## Getting Started
 
-- Node.js 18+
-- Python 3.11+
-- PostgreSQL database
-- Docker and Docker Compose (optional)
+### Prerequisites
 
-## Setup
+- Python 3.13+
+- PostgreSQL-compatible database (Neon recommended)
+- Better Auth configured
+- Cohere API key
 
-### Option 1: Using Docker (Recommended)
+### Installation
 
-1. Clone the repository
-2. Update the database connection string and authentication secrets in `backend/.env` if needed
-3. Run the application using Docker Compose:
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd <repository-directory>
+   ```
 
-```bash
-docker-compose up --build
-```
+2. Navigate to backend directory:
+   ```bash
+   cd backend
+   ```
 
-The frontend will be available at `http://localhost:3000` and the backend API at `http://localhost:8000`.
+3. Create virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
-### Option 2: Manual Setup
+4. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-#### Backend Setup
+5. Set up environment variables:
+   Copy `.env` and update with your configuration:
+   ```bash
+   cp .env .env.local
+   # Edit .env.local with your settings
+   ```
 
-1. Navigate to the backend directory:
-```bash
-cd backend
-```
+6. Start the backend server:
+   ```bash
+   uvicorn src.main:app --reload
+   ```
 
-2. Create a virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
+7. Navigate to frontend directory and start the frontend:
+   ```bash
+   cd ../frontend
+   npm install
+   npm run dev
+   ```
 
-3. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+## Usage
 
-4. Set up environment variables:
-```bash
-cp .env.example .env  # Update with your database credentials and authentication secrets
-```
+The AI chatbot understands natural language commands such as:
+- "Add a task to buy groceries"
+- "Show me my tasks"
+- "Complete task number 1"
+- "Delete my meeting task"
+- "Update task 2 to 'Call John tomorrow'"
 
-5. Run the backend:
-```bash
-uvicorn src.main:app --reload
-```
+## Architecture
 
-#### Frontend Setup
-
-1. Navigate to the frontend directory:
-```bash
-cd frontend
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Set up environment variables:
-```bash
-cp .env.local.example .env.local  # Update with your API base URL
-```
-
-4. Run the development server:
-```bash
-npm run dev
-```
-
-## Authentication Setup
-
-### Environment Variables
-
-#### Backend (.env)
-
-- `DATABASE_URL` - PostgreSQL connection string
-- `BETTER_AUTH_SECRET` - Secret key for Better Auth (should be at least 32 characters, used for JWT signing)
-- `ALGORITHM` - Algorithm for JWT tokens (HS256)
-- `ACCESS_TOKEN_EXPIRE_MINUTES` - Token expiration time (default: 15 minutes for security)
-
-#### Frontend (.env.local)
-
-- `NEXT_PUBLIC_API_BASE_URL` - Base URL for API calls (e.g., http://localhost:8000)
-
-### Generating BETTER_AUTH_SECRET
-
-To generate a secure secret for `BETTER_AUTH_SECRET`, run:
-
-```bash
-openssl rand -base64 32
-```
-
-Or use an online secure random generator to create a 32+ character random string.
-
-### Authentication Endpoints
-
-The authentication API is available at `http://localhost:8000/api/auth/`:
-
-- `POST /auth/register` - Register a new user with email and password
-- `POST /auth/login` - Login and get JWT token
-- `POST /auth/logout` - Logout (client-side token removal)
-
-### User Registration and Login Flow
-
-1. New users can register at `/register` page with email and password
-2. Existing users can login at `/login` page with their credentials
-3. After successful authentication, JWT tokens are securely stored and managed
-4. All API requests include the JWT token in the Authorization header as "Bearer {token}"
-5. The system enforces user isolation - users can only access their own tasks
-6. Session cookies are configured with HttpOnly, Secure, and SameSite=Lax flags for security
-
-### Secure Task Access
-
-The application enforces user-specific task access through:
-
-- User ID validation: The user ID in the JWT token must match the user ID in the API path
-- Task filtering: The backend only returns tasks belonging to the authenticated user
-- Authorization headers: All requests must include a valid JWT token
-- Path-based access control: Task endpoints require user_id in the path (e.g., `/api/v1/users/{user_id}/tasks`)
-
-### Frontend Authentication Provider
-
-The frontend uses an authentication context provider that:
-
-- Manages user session state
-- Handles login and logout operations
-- Stores JWT tokens securely
-- Intercepts API requests to add authorization headers
-- Redirects unauthenticated users to login page
-- Handles 401 responses by redirecting to login
+The system follows a stateless architecture where:
+1. User messages are received via the chat endpoint
+2. Conversation history is loaded from the database
+3. The AI agent processes the message with MCP tools
+4. Tool calls are executed to perform database operations
+5. Responses are saved and returned to the user
 
 ## API Endpoints
 
-The API is available at `http://localhost:8000/api/v1/`:
+The API is available at `http://localhost:8000/api/`:
 
-- `GET /users/{user_id}/tasks` - Get all tasks for the specified user (must match authenticated user)
-- `POST /users/{user_id}/tasks` - Create a new task for the specified user (must match authenticated user)
-- `GET /users/{user_id}/tasks/{task_id}` - Get a specific task (must belong to specified user and authenticated user)
-- `PUT /users/{user_id}/tasks/{task_id}` - Update a task (must belong to specified user and authenticated user)
-- `PATCH /users/{user_id}/tasks/{task_id}/toggle-completion` - Toggle task completion status (must belong to specified user and authenticated user)
-- `DELETE /users/{user_id}/tasks/{task_id}` - Delete a task (must belong to specified user and authenticated user)
+- `POST /{user_id}/chat` - Process a user message in a conversation (must match authenticated user)
 
 All endpoints require a valid JWT token in the Authorization header with "Bearer" prefix. The user_id in the path must match the user_id in the JWT token for security validation.
 
@@ -172,9 +105,11 @@ All endpoints require a valid JWT token in the Authorization header with "Bearer
 ```
 backend/
 ├── src/
-│   ├── models/          # Database models
-│   ├── services/        # Business logic
-│   ├── api/             # API routes
+│   ├── models/          # Database models (Task, Conversation, Message)
+│   ├── services/        # Business logic (Conversation, Message, Agent services)
+│   ├── api/             # API routes (Chat endpoint)
+│   ├── mcp/             # MCP server and tools
+│   ├── agents/          # AI agent configuration
 │   ├── auth/            # Authentication logic
 │   └── main.py          # Application entry point
 ├── requirements.txt     # Python dependencies
@@ -182,7 +117,6 @@ backend/
 
 frontend/
 ├── src/
-│   ├── auth/            # Authentication provider
 │   ├── components/      # React components
 │   ├── pages/           # Next.js pages
 │   ├── services/        # API services
@@ -206,14 +140,6 @@ Frontend:
 cd frontend
 npm run dev
 ```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
 
 ## License
 

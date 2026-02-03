@@ -3,6 +3,7 @@ import { useTasks } from '../contexts/TasksContext';
 import { useAuth } from '../auth/auth_provider';
 import TaskList from '../components/TaskList';
 import TaskForm from '../components/TaskForm';
+import ChatInterface from '../components/ChatInterface';
 import Link from 'next/link';
 
 const HomePage = () => {
@@ -100,25 +101,36 @@ const HomePage = () => {
         <p className="app-subtitle text-gray-600">Manage your tasks efficiently with real-time updates</p>
       </div>
 
-      <div className="app-content grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="form-section">
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">Add New Task</h2>
-            <TaskForm
-              onTaskCreated={handleTaskCreated}
-              taskToEdit={taskToEdit}
-              onEditComplete={handleTaskUpdated}
-            />
+      <div className="app-content grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Left Column: Task Form and Task List */}
+        <div className="left-column space-y-8">
+          <div className="form-section">
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h2 className="text-xl font-semibold mb-4">Add New Task</h2>
+              <TaskForm
+                onTaskCreated={handleTaskCreated}
+                taskToEdit={taskToEdit}
+                onEditComplete={handleTaskUpdated}
+              />
+            </div>
+          </div>
+
+          <div className="list-section">
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h2 className="text-xl font-semibold mb-4">Your Tasks</h2>
+              <TaskList
+                onTaskUpdate={handleEditTask}
+                onTaskDelete={handleDeleteTask}
+              />
+            </div>
           </div>
         </div>
 
-        <div className="list-section">
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">Your Tasks</h2>
-            <TaskList
-              onTaskUpdate={handleEditTask}
-              onTaskDelete={handleDeleteTask}
-            />
+        {/* Right Column: AI Chat Interface */}
+        <div className="right-column">
+          <div className="bg-white p-6 rounded-lg shadow h-full">
+            <h2 className="text-xl font-semibold mb-4">AI Todo Assistant</h2>
+            <ChatInterface />
           </div>
         </div>
       </div>
