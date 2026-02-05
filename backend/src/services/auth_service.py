@@ -21,6 +21,9 @@ class AuthService:
     @staticmethod
     def get_password_hash(password: str) -> str:
         """Hash a plain password"""
+        # Check password length - bcrypt has a 72 byte limit
+        if len(password.encode('utf-8')) > 72:
+            raise ValueError("Password must not exceed 72 bytes")
         return pwd_context.hash(password)
 
     @classmethod
@@ -41,7 +44,11 @@ class AuthService:
             raise ValueError("Email already registered")
 
         # Hash the password
-        hashed_password = cls.get_password_hash(password)
+        try:
+            hashed_password = cls.get_password_hash(password)
+        except ValueError as e:
+            # Re-raise the password length error
+            raise e
 
         # Create new user
         user = User(

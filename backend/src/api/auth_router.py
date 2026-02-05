@@ -31,6 +31,13 @@ class Token(BaseModel):
 @router.post("/register", response_model=User)
 async def register(user_data: UserRegister, session: Session = Depends(get_session)):
     """Register a new user with email and password"""
+    # Validate password length before attempting to hash
+    if len(user_data.password.encode('utf-8')) > 72:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must not exceed 72 bytes"
+        )
+
     try:
         user = AuthService.register_user(
             email=user_data.email,
@@ -40,9 +47,16 @@ async def register(user_data: UserRegister, session: Session = Depends(get_sessi
         )
         return user
     except ValueError as e:
+        # Catch both email already registered and password too long errors
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
+        )
+    except Exception as e:
+        # Catch any other unexpected errors (like bcrypt errors)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Registration failed: {str(e)}"
         )
 
 

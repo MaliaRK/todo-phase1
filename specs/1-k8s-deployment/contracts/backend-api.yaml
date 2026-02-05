@@ -1,0 +1,73 @@
+# API Contract: Todo Chatbot Backend Service
+
+## Overview
+The backend service provides the AI-powered todo chatbot functionality using OpenAI Agents SDK and MCP. It serves as the API layer between the frontend and the Neon PostgreSQL database.
+
+## Base URL
+`http://todo-backend-service:8000` (internal Kubernetes service)
+
+## Endpoints
+
+### GET /health
+**Description**: Health check endpoint to verify service availability
+**Response**:
+- 200: `{"status": "healthy", "timestamp": "ISO8601"}`
+
+### POST /chat
+**Description**: Process chat messages and return AI-generated responses
+**Request Body**:
+```json
+{
+  "message": "string",
+  "user_id": "string (optional)",
+  "session_id": "string (optional)"
+}
+```
+**Response**:
+- 200: `{"response": "string", "session_id": "string"}`
+- 400: `{"error": "string"}`
+
+### GET /todos
+**Description**: Retrieve all todos for a user/session
+**Query Parameters**:
+- user_id: string (optional)
+- session_id: string (optional)
+**Response**:
+- 200: `{"todos": [{"id": "string", "text": "string", "completed": "boolean"}]}`
+- 400: `{"error": "string"}`
+
+### POST /todos
+**Description**: Create a new todo
+**Request Body**:
+```json
+{
+  "text": "string",
+  "user_id": "string (optional)",
+  "session_id": "string (optional)"
+}
+```
+**Response**:
+- 201: `{"id": "string", "text": "string", "completed": "false"}`
+- 400: `{"error": "string"}`
+
+### PUT /todos/{id}
+**Description**: Update an existing todo
+**Path Parameter**: id (string)
+**Request Body**:
+```json
+{
+  "text": "string (optional)",
+  "completed": "boolean (optional)"
+}
+```
+**Response**:
+- 200: `{"id": "string", "text": "string", "completed": "boolean"}`
+- 400: `{"error": "string"}`
+- 404: `{"error": "Todo not found"}`
+
+### DELETE /todos/{id}
+**Description**: Delete a todo
+**Path Parameter**: id (string)
+**Response**:
+- 204: No content
+- 404: `{"error": "Todo not found"}`

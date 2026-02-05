@@ -1,7 +1,6 @@
 from openai import OpenAI
 import os
 from dotenv import load_dotenv
-from ..config import settings
 from ..utils.logging import get_logger
 
 load_dotenv()
@@ -14,11 +13,8 @@ class AgentConfig:
     """
 
     def __init__(self):
-        # Configure OpenAI client to use Cohere API
-        self.client = OpenAI(
-            api_key=settings.cohere_api_key or settings.openai_api_key,
-            base_url="https://api.cohere.ai/v1"  # Use Cohere's OpenAI-compatible endpoint
-        )
+        # Store configuration values but don't initialize client yet
+        self._client = None
 
         # Agent instructions focused on task management
         self.agent_instructions = """
@@ -40,19 +36,53 @@ class AgentConfig:
         If you're unsure about any details, ask the user for clarification.
         """
 
-        # Model to use
-        self.model = "command-r-plus"  # Using Cohere's command-r-plus model
+        # Model to use (matching approach in agent_service.py)
+        self.model = "command-r-08-2024"  # Using Cohere's command-r model as in agent_service.py
 
-        logger.info("Agent configuration initialized with Cohere API")
+        logger.info("Agent configuration initialized with lazy client initialization")
 
     def get_client(self):
         """
         Get the OpenAI client configured for Cohere API.
+        Initializes the client only when first accessed to avoid startup issues.
 
         Returns:
             OpenAI client instance
         """
-        return self.client
+        if self._client is None:
+            # Temporarily clear proxy environment variables that may interfere with OpenAI client
+            proxy_backup = {}
+            for key in ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy', 'ALL_PROXY', 'all_proxy']:
+                if key in os.environ:
+                    proxy_backup[key] = os.environ[key]
+                    del os.environ[key]
+
+            try:
+                # Get API key from environment variable (matching approach in agent_service.py)
+                api_key = os.getenv("COHERE_API_KEY")
+                if not api_key:
+                    logger.error("No Cohere API key found in environment variables")
+                    # Fallback to settings if environment variable is not available
+                    from ..config import settings
+                    api_key = getattr(settings, 'cohere_api_key', None) or getattr(settings, 'openai_api_key', None)
+
+                if not api_key:
+                    raise ValueError("Either COHERE_API_KEY environment variable or settings.cohere_api_key is required")
+
+                # Configure OpenAI client to use Cohere API - using compatibility endpoint like in agent_service.py
+                self._client = OpenAI(
+                    api_key=api_key,
+                    base_url="https://api.cohere.ai/compatibility/v1"  # Use Cohere's compatibility endpoint as in agent_service.py
+                )
+
+                logger.info("OpenAI client initialized with Cohere API")
+
+            finally:
+                # Restore proxy environment variables if they existed
+                for key, value in proxy_backup.items():
+                    os.environ[key] = value
+
+        return self._client
 
     def get_instructions(self):
         """
@@ -72,8 +102,8 @@ class AgentConfig:
         """
         return self.model
 
-# Global agent configuration instance
-agent_config = AgentConfig()
+# Global agent configuration instance (initialized lazily)
+_agent_config_instance = None
 
 def get_agent_config() -> AgentConfig:
     """
@@ -82,4 +112,7 @@ def get_agent_config() -> AgentConfig:
     Returns:
         AgentConfig instance
     """
-    return agent_config
+    global _agent_config_instance
+    if _agent_config_instance is None:
+        _agent_config_instance = AgentConfig()
+    return _agent_config_instance

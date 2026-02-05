@@ -23,16 +23,28 @@ class TaskAgent:
     """
 
     def __init__(self):
-        # Configure AsyncOpenAI client to use Cohere API
-        api_key = os.getenv("COHERE_API_KEY")
-        if not api_key:
-            logger.error("No Cohere API key found in environment variables")
-            raise ValueError("COHERE_API_KEY environment variable is required")
+        # Temporarily clear proxy environment variables that may interfere with OpenAI client
+        proxy_backup = {}
+        for key in ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy', 'ALL_PROXY', 'all_proxy']:
+            if key in os.environ:
+                proxy_backup[key] = os.environ[key]
+                del os.environ[key]
 
-        self.client = AsyncOpenAI(
-            api_key=api_key,
-            base_url="https://api.cohere.ai/compatibility/v1"  # Use Cohere's compatibility endpoint as in agentbot.py
-        )
+        try:
+            # Configure AsyncOpenAI client to use Cohere API
+            api_key = os.getenv("COHERE_API_KEY")
+            if not api_key:
+                logger.error("No Cohere API key found in environment variables")
+                raise ValueError("COHERE_API_KEY environment variable is required")
+
+            self.client = AsyncOpenAI(
+                api_key=api_key,
+                base_url="https://api.cohere.ai/compatibility/v1"  # Use Cohere's compatibility endpoint as in agentbot.py
+            )
+        finally:
+            # Restore proxy environment variables if they existed
+            for key, value in proxy_backup.items():
+                os.environ[key] = value
 
         # Agent instructions focused on task management
         self.instructions = """
@@ -187,8 +199,20 @@ class TaskAgent:
             }
 
 
-# Global agent instance
-agent = TaskAgent()
+# Global agent instance (lazy initialization to avoid startup issues)
+_agent_instance = None
+
+def get_agent():
+    """
+    Get the global agent instance with lazy initialization.
+
+    Returns:
+        TaskAgent instance
+    """
+    global _agent_instance
+    if _agent_instance is None:
+        _agent_instance = TaskAgent()
+    return _agent_instance
 
 
 async def process_user_message(
@@ -207,7 +231,8 @@ async def process_user_message(
     Returns:
         Dictionary containing the agent's response and any tool calls
     """
-    return await agent.process_message(user_id, conversation_id, user_message)
+    agent_instance = get_agent()
+    return await agent_instance.process_message(user_id, conversation_id, user_message)
 
 
 async def process_tool_calls(

@@ -31,7 +31,8 @@ Each phase must use its designated technology stack without introducing future-p
 - Phase I: Python 3.13+, UV, Console I/O
 - Phase II: Next.js, FastAPI, SQLModel, Neon DB
 - Phase III: OpenAI ChatKit, Agents SDK, MCP SDK
-- Phase IV: Docker, Kubernetes, Helm, Minikube
+- Phase IV: Docker, Kubernetes, Helm, Minikube, Charts, kubectl-ai, Kagent, Docker Desktop, and Gordon
+
 - Phase V: Kafka, Dapr, DigitalOcean Kubernetes
 Claude Code must always respect the **current phase's tech stack** without introducing future-phase technologies prematurely.
 

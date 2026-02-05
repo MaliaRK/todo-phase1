@@ -7,7 +7,6 @@ from ..models.conversation_model import Conversation, ConversationCreate
 from ..database import get_session
 from ..auth.jwt_auth import get_current_user
 from ..models.user_model import User
-from ..agents.config import agent_config
 from ..utils.logging import get_logger
 # Remove these imports as they're not used in the current implementation
 # from openai.types.beta.threads.runs.run import Run
